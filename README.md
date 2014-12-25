@@ -9,9 +9,9 @@ Now it's just a dictionaries, parsed to JSON. Sources of dictionaries mined from
 ## Usage
 
 ```javascript
-var Dictionary = require('dictionary');
+var Lexic = require('lexic');
 
-Dictionary.create({<options>}, function(error, dictionary) {
+Lexic.create({<options>}, function(error, dictionary) {
     if (err) throw err;
     // dictionary is a new dictionary
 });

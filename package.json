@@ -4,5 +4,10 @@
   "version": "0.0.1",
   "dependencies": {
     "encoding": "*"
+  },
+  "main": "lexic.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Arhangel64/lexic.js.git"
   }
 }
