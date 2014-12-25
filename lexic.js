@@ -44,7 +44,7 @@ Dic.prototype.check = function(options) {
     if (!options.gram) {
         return 2;
     }
-    if (!options.lang || !this.langs[options.lang]) {
+    if (!options.lang || !Dic.langs[options.lang]) {
         options.lang = "en";
         console.warn('Missing language ' + options.lang +", using english (en)!");
     }
@@ -92,7 +92,7 @@ Dic.prototype.import = function(options, callback) {
             return;
         }
         if (options.lang !== "en") {
-            data = encoding.convert(data, "utf8", that.langs[options.lang].encoding);
+            data = encoding.convert(data, "utf8", Dic.langs[options.lang].encoding);
         }
         data = data.toString().replace(/\r/g, "");
         var split = data.split('\n');
@@ -116,7 +116,7 @@ Dic.prototype.import = function(options, callback) {
                 return;
             }
             if (options.lang !== "en") {
-                data = encoding.convert(data, "utf8", that.langs[options.lang].encoding);
+                data = encoding.convert(data, "utf8", Dic.langs[options.lang].encoding);
             }
             data = data.toString().replace(/\r/g, "");
             var split = data.split('\n');
@@ -164,11 +164,14 @@ Dic.prototype.mine = function(options) {
         that.v.lemmas = {};
         for (var i = 0; i < source.lexems.length; ++i) {
             var lex = source.lexems[i].split(' ');
-            that.v.lemmas[lex[0]] = {
+            if (!that.v.lemmas[lex[0]]) {
+                that.v.lemmas[lex[0]] = [];
+            }
+            that.v.lemmas[lex[0]].push({
                 paradigma: lex[1],
                 asset: lex[2],
                 rule: lex[4] == "-" ? false : lex[4]
-            };
+            });
         }
         that.v.paradigmas = [];
         for (var j = 0; j < source.paradigmas.length; ++j) {
@@ -229,7 +232,7 @@ Dic.prototype.store = function(path, callback) {
         }
     });
 };
-Dic.prototype.langs = {
+Dic.langs = {
     ru: {
         encoding: "cp-1251"
     },
@@ -238,6 +241,31 @@ Dic.prototype.langs = {
     },
     en: {
         encoding: "utf8"
+    }
+};
+Dic.gmap = {
+    ru: {
+        "С": "Noun",
+        "П": "Adjective",
+        "КР_ПРИЛ": "Adjective:short",
+        "ИНФИНИТИВ": "Verb:base",
+        "Г": "Verb",
+        "ДЕЕПРИЧАСТИЕ": "Adverb:participle",
+        "ПРИЧАСТИЕ": "Participle",
+        "КР_ПРИЧАСТИЕ": "Participle:short",
+        "МС": "Pronoun",
+        "МС-П": "Pronoun:adjective", //todo what the fuck is П?!
+        "МС-ПРЕДК": "Pronoun:predicative",
+        "ЧИСЛ": "Numeral",
+        "ЧИСЛ-П": "Numeral:ordered",
+        "Н": "Adverb",
+        "ПРЕДК": "Predicative",
+        "ПРЕДЛ": "Preposition",
+        "СОЮЗ": "Union", //don't know how to translate,
+        "МЕЖД": "Interjection",
+        "ЧАСТ": "Part",
+        "ВВОДН": "Parenthesis",
+        "*": "Any"
     }
 };
 Dic.prototype.errors = [
