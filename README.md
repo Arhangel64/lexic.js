@@ -37,13 +37,26 @@ __Options__
 
 ## dictionary
 
+### dictionary.parse(string, deep)
+
+Method returns an array of theories. It is low levelled, so, I don't expect anyone will use it.
+
+Theory is an object.
+
+__Theory properties__
+
+* `variants` - array of grammar elements
+* `base` - base grammar element of the theory
+* `assumption` - is the assumption of theory. Contain base - hypothetical lemma of `string`, and ending - hypothetical ending of `string`
+
+__Arguments__
+
+* `string` - is a string you want to parse. The `string` should be in language, you passed to `options` of `Lexic.create()`.
+* `deep` - boolean. `false` by default. If `true` method will try to find every possible variant in dictionary, no matter how many variants it already founded.
+
 ### dictionary.store(path, callback)
 
 That method will help you to store loaded json. `callback` will be called with only `err`, if there will be smth wrong
-
-###dictionary.load(callback)
-
-A method to load json dictionary. It's only for initialization, don't use it!
 
 ### dictionary.mine(options, callback)
 
@@ -62,3 +75,7 @@ __Options__
 * `lang` - the language of mining dictionary. It changes the `lang` of a `dictionary`
 * `gram` - a grammar file, it often sounds like `egramtab.tab`, from [aot.ru](http://aot.ru) too
 * `path` - path for storing json dictionary
+
+###dictionary.load(callback)
+
+A method to load json dictionary. It's only for initialization, don't use it!
