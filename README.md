@@ -20,7 +20,7 @@ Dictionary.create({<options>}, function(error, dictionary) {
 # Documentation
 
 In that distribution there are 3 dictionary json's. They are pretty heavy, so, you may remove those you aren't
-interested in. You may find them in 'dic/' folder
+interested in. You may find them in `dic/` folder
 
 ## Module
 
@@ -57,8 +57,8 @@ __Arguments__
 
 __Options__
 
-* `dic` - is the path to main dictionary. Dictionary should be in [aot.ru](aot.ru) format. It often has extension `
+* `dic` - is the path to main dictionary. Dictionary should be in [aot.ru](http://aot.ru) format. It often has extension `
 .mrd`
-* `lang` - the language of mining dictionary. It changes the 'lang' of a `dictionary`
+* `lang` - the language of mining dictionary. It changes the `lang` of a `dictionary`
 * `gram` - a grammar file, it often sounds like `egramtab.tab`, from [aot.ru](http://aot.ru) too
 * `path` - path for storing json dictionary
