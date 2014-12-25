@@ -153,6 +153,7 @@ Dic.prototype.import = function(options, callback) {
 Dic.prototype.mine = function(options) {
     var that = this;
     options = options || that.options;
+    that.options.lang = options.lang;
     var err = that.check(options);
     if (err) {
         that.exit(err);
@@ -206,10 +207,11 @@ Dic.prototype.mine = function(options) {
         }
         that.v.prefixes = source.prefixes;
         that.v.rules = source.rules;
-        that.save('dic/' + options.lang + '.json');
+        var path = options.path || 'dic/' + options.lang + '.json';
+        that.store(path);
     });
 };
-Dic.prototype.save = function(path, callback) {
+Dic.prototype.store = function(path, callback) {
     var that = this;
     if (typeof path == "function") {
         callback = path;

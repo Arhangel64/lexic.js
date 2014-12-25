@@ -1,5 +1,6 @@
 {
-  "name": "morfologyjs",
+  "name": "lexic",
+  "description": "Lexic analyser",
   "version": "0.0.1",
   "dependencies": {
     "encoding": "*"
