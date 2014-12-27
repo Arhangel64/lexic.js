@@ -3,6 +3,7 @@
  */
 var fs = require('fs');
 var encoding = require('encoding');
+var Word = require('./word');
 
 var Dic = function(options, callback) {
     var that = this;
@@ -15,6 +16,10 @@ var Dic = function(options, callback) {
     that.options = options;
     that.rules = {};
     that.load(that.callback);
+};
+
+Dic.prototype.find = function(word) {
+    return new Word(word, this.parse(word, true));
 };
 
 Dic.prototype.parse = function(string, deep) {
@@ -39,6 +44,7 @@ Dic.prototype.parse = function(string, deep) {
             var ending = string.slice(i).toUpperCase();
             var theory = that.queryLemma(lemma, ending, key);
             for (var j = 0; j < theory.length; ++j) {
+                theory[j].assumption.prefix = "";
                 answer.push(theory[j]);
             }
             if (deep !== true && answer.length) {
@@ -48,13 +54,16 @@ Dic.prototype.parse = function(string, deep) {
     }
     var lastTheory = that.queryLemma(that.v.lemmas['#'], string);
     for (var k = 0; k < lastTheory.length; ++k) {
+        lastTheory[k].assumption.prefix = "";
         answer.push(lastTheory[k]);
     }
     if (answer.length === 0 || deep) {
         var deprefixed = that.removePrefix(string);
         if (deprefixed) {
+            var prefix = string.slice(0, string.length - deprefixed.length);
             var unprefixed = that.parse(deprefixed);
             for (var l = 0; l < unprefixed.length; ++l) {
+                unprefixed[l].assumption.prefix = prefix + (unprefixed[l].assumption.prefix || "");
                 answer.push(unprefixed[l]);
             }
         }
@@ -69,6 +78,7 @@ Dic.prototype.queryLemma = function(lemma, ending, key) {
     for (var l = 0; l < lemma.length; ++l) {
         var theory = {
             variants: [],
+            weight: key.length || 0,
             base: that.v.rules[lemma[l].rule] || false,
             assumption: {
                 ending: ending,
@@ -497,7 +507,7 @@ new Dic({lang:'ru'}, function(err, dic) {
     var arr = str.split(" ");
     var date = + new Date();
     for (var i = 0; i < arr.length; ++i) {
-        console.log(dic.parse(arr[i]));
+        console.log(dic.find(arr[i]).variants);
     }
     var date2 = + new Date();
     console.log('it took me for '+ (date2 - date) + 'ms');

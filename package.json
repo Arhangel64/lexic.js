@@ -1,9 +1,10 @@
 {
   "name": "lexic",
   "description": "Lexic analyser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "dependencies": {
-    "encoding": "*"
+    "encoding": "*",
+    "node.extend": "*"
   },
   "main": "lexic.js",
   "repository": {
