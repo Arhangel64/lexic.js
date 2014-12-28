@@ -117,7 +117,7 @@ Word.prototype.grammar = function() {
     var that = this;
     var answer = "";
     for (var key in that.info) {
-        if (that.info.hasOwnProperty(key)) {
+        if (that.info.hasOwnProperty(key) && key !== "weight") {
             answer += key + ": " + that.info[key]+"; ";
         }
     }
@@ -135,10 +135,12 @@ Word.prototype.conclude = function(obj) {
     var variants = [];
     for (var key in obj.types) {
         if (obj.types.hasOwnProperty(key)) {
-            var types = [extend(common ,{
+            var firstType = {
                 type: key,
                 weight: obj.types[key].score
-            })];
+            };
+            extend(firstType,common);
+            var types = [firstType];
             for (var prop in obj.types[key]) {
                 if (obj.types[key].hasOwnProperty(prop)) {
                     var property = obj.types[key][prop];
@@ -153,7 +155,8 @@ Word.prototype.conclude = function(obj) {
                                 }
                             }
                             if (!flag) {
-                                var newType = extend(types[0] || {}, {});
+                                var newType = {};
+                                extend(newType, types[0] || {});
                                 newType[prop] = value;
                                 types.push(newType);
                             }
@@ -162,7 +165,7 @@ Word.prototype.conclude = function(obj) {
                 }
             }
             for (var j = 0; j < types.length; ++j) {
-                variants.push(extend({},types[j]));
+                variants.push(types[j]);
             }
         }
     }
