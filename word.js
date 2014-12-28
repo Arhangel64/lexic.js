@@ -12,10 +12,11 @@ var Word = function(source, variants){
     that.source = source;
 };
 Word.prototype.price = function(array) {
-    var types = {};
-    var common = {};
+    var paradigmas = {};
     for (var i = 0; i < array.length; ++i) {
         var theory = array[i];
+        var types = {};
+        var common = {};
         if (theory.base) {
             var baseInfo = theory.base.info;
             if (theory.base.type !== "Any") {
@@ -79,8 +80,13 @@ Word.prototype.price = function(array) {
                 }
             }
         }
+        paradigmas[theory.assumption.paradigma] = {
+            common: common,
+            types: types,
+            assumption: theory.assumption
+        }
     }
-    return {common: common, types: types};
+    return paradigmas;
 };
 Word.prototype.suggest = function(array) {
     var that = this;
@@ -117,7 +123,7 @@ Word.prototype.grammar = function() {
     var that = this;
     var answer = "";
     for (var key in that.info) {
-        if (that.info.hasOwnProperty(key) && key !== "weight") {
+        if (that.info.hasOwnProperty(key) && key !== "weight"&& key !== "assumption") {
             answer += key + ": " + that.info[key]+"; ";
         }
     }
@@ -125,47 +131,52 @@ Word.prototype.grammar = function() {
 };
 
 Word.prototype.conclude = function(obj) {
-    var that = this;
-    var common = {};
-    for (var com in obj.common) {
-        if (obj.common.hasOwnProperty(com)) {
-            common[com] = obj.common[com];
-        }
-    }
     var variants = [];
-    for (var key in obj.types) {
-        if (obj.types.hasOwnProperty(key)) {
-            var firstType = {
-                type: key,
-                weight: obj.types[key].score
-            };
-            extend(firstType,common);
-            var types = [firstType];
-            for (var prop in obj.types[key]) {
-                if (obj.types[key].hasOwnProperty(prop)) {
-                    var property = obj.types[key][prop];
-                    for (var value in property) {
-                        if (property.hasOwnProperty(value)) {
-                            var flag = false;
-                            for (var i = 0; i < types.length; ++i) {
-                                if (types[i][prop] === undefined || types[i][prop] === value) {
-                                    types[i][prop] = value;
-                                    flag = true;
-                                    break;
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            var paradigma = obj[p];
+            var common = {};
+            for (var com in paradigma.common) {
+                if (paradigma.common.hasOwnProperty(com)) {
+                    common[com] = paradigma.common[com];
+                }
+            }
+            for (var key in paradigma.types) {
+                if (paradigma.types.hasOwnProperty(key)) {
+                    var firstType = {
+                        type: key,
+                        weight: paradigma.types[key].score,
+                        assumption: paradigma.assumption
+                    };
+                    extend(firstType,common);
+                    var types = [firstType];
+                    for (var prop in paradigma.types[key]) {
+                        if (paradigma.types[key].hasOwnProperty(prop)) {
+                            var property = paradigma.types[key][prop];
+                            for (var value in property) {
+                                if (property.hasOwnProperty(value)) {
+                                    var flag = false;
+                                    for (var i = 0; i < types.length; ++i) {
+                                        if (types[i][prop] === undefined || types[i][prop] === value) {
+                                            types[i][prop] = value;
+                                            flag = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!flag) {
+                                        var newType = {};
+                                        extend(newType, types[0] || {});
+                                        newType[prop] = value;
+                                        types.push(newType);
+                                    }
                                 }
-                            }
-                            if (!flag) {
-                                var newType = {};
-                                extend(newType, types[0] || {});
-                                newType[prop] = value;
-                                types.push(newType);
                             }
                         }
                     }
+                    for (var j = 0; j < types.length; ++j) {
+                        variants.push(types[j]);
+                    }
                 }
-            }
-            for (var j = 0; j < types.length; ++j) {
-                variants.push(types[j]);
             }
         }
     }

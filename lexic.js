@@ -52,9 +52,10 @@ Dic.prototype.parse = function(string, deep) {
             }
         }
     }
-    var lastTheory = that.queryLemma(that.v.lemmas['#'], string);
+    var lastTheory = that.queryLemma(that.v.lemmas['#'], string.toUpperCase());
     for (var k = 0; k < lastTheory.length; ++k) {
         lastTheory[k].assumption.prefix = "";
+        lastTheory[k].weight = string.length;
         answer.push(lastTheory[k]);
     }
     if (answer.length === 0 || deep) {
@@ -82,7 +83,8 @@ Dic.prototype.queryLemma = function(lemma, ending, key) {
             base: that.v.rules[lemma[l].rule] || false,
             assumption: {
                 ending: ending,
-                base: key
+                base: key,
+                paradigma: lemma[l].paradigma
             }
         };
         if (ending === "") ending = "empty";
@@ -507,7 +509,7 @@ new Dic({lang:'ru'}, function(err, dic) {
     var arr = str.split(" ");
     var date = + new Date();
     for (var i = 0; i < arr.length; ++i) {
-        console.log(dic.find(arr[i]).variants);
+        console.log(dic.find(arr[i]).grammar());
     }
     var date2 = + new Date();
     console.log('it took me for '+ (date2 - date) + 'ms');
