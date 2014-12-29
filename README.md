@@ -92,12 +92,21 @@ A method to load json dictionary. It's only for initialization, don't use it!
 
 ## word
 
-Word is an object of result. It has possible variants of grammar forms of source string inside of it. Most probable variant is in property `main`
+Word is an object of result. It has possible variants of grammar forms of source string inside of it. Variants are
+int hre property word.variants
 
 ### word.toString()
 
 Returns source string
 
-### word.grammar()
+### word.grammar([all])
 
-Returns the string with description of most probable variant of grammar form
+Returns the string with description of the active variant of the grammar form of the word
+
+__Arguments__
+
+* `all` - boolean argument, `false` by default. If true = method will return information about all grammar forms.
+
+### word.otherVariant()
+
+Method will switch active variant of the grammar form.
