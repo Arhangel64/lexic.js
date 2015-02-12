@@ -16,10 +16,11 @@ var Dic = function(options, callback) {
     that.options = options;
     that.rules = {};
     that.load(that.callback);
+    //that.callback(null, this);
 };
 
 Dic.prototype.find = function(word) {
-    return new Word(word, this.parse(word, true));
+    return new Word(word, this.parse(word, true), this);
 };
 
 Dic.prototype.parse = function(string, deep) {
@@ -403,6 +404,7 @@ Dic.gmap = {
         "0": "Stable:true",
         "кр": "Short:true",
         "сравн": "Degree:comparative",
+        "прев": "Degree:superlative",
         "имя": "Name:first",
         "фам": "Name:last",
         "отч": "Name:middle",
@@ -499,17 +501,39 @@ new Dic({lang:'ru'}, function(err, dic) {
     if (err) throw err;
     //console.log(dic.v.rules);
     //dic.mine({dic:'../vocs/Morph/RusSrc/morphs.mrd', lang:'ru', gram:'../vocs/Morph/rgramtab.tab'}, function(err) {
-    //    if (err) throw err;
-    //    dic.mine({dic:'../vocs/Morph/EngSrc/morphs.mrd', lang:'en', gram:'../vocs/Morph/egramtab.tab'}, function(err) {
-    //        if (err) throw err;
-    //        dic.mine({dic:'../vocs/Morph/GerSrc/morphs.mrd', lang:'de', gram:'../vocs/Morph/ggramtab.tab'});
-    //    });
+        //if (err) throw err;
+        //dic.mine({dic:'../vocs/Morph/EngSrc/morphs.mrd', lang:'en', gram:'../vocs/Morph/egramtab.tab'}, function(err) {
+        //    if (err) throw err;
+        //    dic.mine({dic:'../vocs/Morph/GerSrc/morphs.mrd', lang:'de', gram:'../vocs/Morph/ggramtab.tab'});
+        //});
     //});
-    var str = "Маленький шаг для человечества и огромный прыжок для меня";
+
+    var regexp = /[А-ЯЁа-яё]+/;
+    var str = "Здравствуй мой маловероятный посетитель! " +
+        "Позволь немного рассказать о себе. Я - молодой, строящийся " +
+        "веб ресурс. Моя цель - быть маленьким и тихим уголком интернета," +
+        " где ты сможешь комфортно провести время в компании великолепной музыки "+
+        "и своих друзей. К сожалению, моя разработка процесс очень трудозатратный, а"+
+        " команда моих разработчиков весьма немногочисленна, но, возможно, ты - именно "+
+        "тот, кто может мне помочь! Если ты разработчик, дизайнер, верстальщик или просто "+
+        "идейный человек от всей души желающий помочь мне вырасти в серьёзный проект - пиши вот" +
+        " на этот электронный адрес the.betrayer64@gmail.com, серьёзно, мне пригодится любая помощь!" +
+        " Если же ты не готов заниматься разработкой, но, все равно, очень хочешь помочь - пожалуйста, зарегистрируйся" +
+        " и попробуй протестировать мой функционал. Наверняка, у тебя найдётся пара идей или советов, которые ты можешь дать" +
+        " моим разработчикам! Несмотря на моё амбициозное имя, мой функционал пока не столь велик и работаю я, скорее всего, в " +
+        "тестовом режиме. Но ты можешь вести свой блог, " +
+        "обмениваться личными сообщениями с другими пользователями, " +
+        "(грабить корованы... шучу, пока не можешь) загружать и комментировать " +
+        "фотографии. Большое спасибо за внимание, чувствуй себя как дома!";
+
     var arr = str.split(" ");
     var date = + new Date();
     for (var i = 0; i < arr.length; ++i) {
-        console.log(dic.find(arr[i]).grammar());
+        var res = regexp.exec(arr[i]);
+        if (res) {
+            var word = dic.find(res.toString());
+            console.log(word.source + " -> " + word.getBase());
+        }
     }
     var date2 = + new Date();
     console.log('it took me for '+ (date2 - date) + 'ms');

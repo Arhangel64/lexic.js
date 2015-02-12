@@ -1,10 +1,13 @@
 /**
  * Created by betrayer on 27.12.14.
  */
+"use strict";
 var extend = require('node.extend');
 
-var Word = function(source, variants){
+var Word = function(source, variants, vocabulary){
     var that = this;
+    that.vocabulary = vocabulary.v;
+    that.lang = vocabulary.options.lang;
     that.parse(variants);
     that.source = source;
 };
@@ -87,9 +90,101 @@ Word.prototype.otherVariant = function() {
     }
 };
 
-
 Word.prototype.toString = function() {
     return this.source;
 };
 
+Word.prototype.getBase = function() {
+    var that = this;
+    var variant = that.variants[that.activeVariant];
+    if (!variant) return;
+    var filter = [];
+    var antiFilter = [];
+    var paradigma = that.vocabulary.paradigmas[variant.assumption.paradigma].reverse;
+    var type = variant.type;
+    switch (variant.type) {
+        case "Noun":
+            filter = ["Case:nom", "Plural:false", "Gender:"+variant.Gender];
+            break;
+        case "Adjective":
+        case "Adjective:short":
+            type = "Adjective";
+            filter = ["Case:nom", "Plural:false", "Gender:male"];
+            antiFilter = ["Degree:superlative", "Degree:comparative"];
+            break;
+        case "Verb":
+        case "Verb:base":
+            filter = ["1"];
+            if (that.lang = "ru") {
+                type = "Verb:base";
+            }
+            else {
+                filter = ["VerbType:infinitive"]
+            }
+            break;
+        case "Pronoun:adjective":
+            filter = ["Case:nom", "Gender:male", "Face:1st"];
+            break;
+        case "Pronoun":
+            filter = ["Case:nom"];
+            antiFilter = ["Plural:true"];
+            break;
+        case "Participle":
+            filter = ["Case:nom", "Plural:false", "Gender:male", "Time:present"]
+
+    }
+    var r = that.vocabulary.rules;
+    var collecting = [];
+    for (var rule in paradigma) {
+        if (paradigma.hasOwnProperty(rule) && r[rule].type === type) {
+            collecting.push(rule);
+        }
+    }
+    var info, flag, array;
+    for (var i = 0; i < filter.length; ++i) {
+        if (collecting.length <= 1) break;
+        array = [];
+        for (var j = 0; j < collecting.length; ++j) {
+            info = that.vocabulary.rules[collecting[j]].info;
+            flag = false;
+            for (var k = 0; k < info.length; ++k) {
+                if (info[k] == filter[i]) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag) {
+                array.push(collecting[j]);
+            }
+        }
+        collecting = array;
+    }
+    for (var t = 0; t < antiFilter.length; ++t) {
+        if (collecting.length <= 1) break;
+        array = [];
+        for (var u = 0; u < collecting.length; ++u) {
+            info = that.vocabulary.rules[collecting[u]].info;
+            flag = true;
+            for (var w = 0; w < info.length; ++w) {
+                if (info[w] == antiFilter[t]) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                array.push(collecting[u]);
+            }
+        }
+        collecting = array;
+    }
+    var answer = "";
+    if (collecting && collecting[0]) {
+        var key = collecting[0];
+        answer = ((paradigma[key].prefix || "") + variant.assumption.base + (paradigma[key].ending || "")).toLowerCase();
+    }
+
+    return answer;
+};
+
 module.exports = Word;
+
