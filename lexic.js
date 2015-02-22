@@ -33,7 +33,7 @@ Lexic.prototype.analys = function(text) {
 };
 
 Lexic.prototype.findWord = function(word) {
-    return new Word(word, this.dictionary.parse(word, true), this);
+    return new Word(word, this.dictionary.parse(word, true), this.dictionary);
 };
 
 module.exports.create = function(options, callback) {

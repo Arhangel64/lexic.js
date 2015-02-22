@@ -11,9 +11,9 @@ Now it's just a dictionaries, parsed to JSON. Sources of dictionaries mined from
 ```javascript
 var Lexic = require('lexic');
 
-Lexic.create({<options>}, function(error, dictionary) {
+Lexic.create({<options>}, function(error, lexic) {
     if (err) throw err;
-    // dictionary is a new dictionary
+    // lexic is a new lexic analyser
 });
 ```
 
@@ -29,23 +29,31 @@ interested in. You may find them in `dic/` folder
 __Arguments__
 
 * `options` - is an object of options.
-* `callback` - is a function, there will be `err` and `dictionary` passed into a `callback`
+* `callback` - is a function, there will be `err` and `lexic` passed into a `callback`
 
 __Options__
 
 * `lang` - is a language of creating dictionary. Now it can be `ru`, `en`, `de`
 
-## dictionary
+## lexic
 
-It's a special object you've got to work with.
+it's a special object contains methods to analyze text. It has property `lexic.dictionary` which is the reference to the `dictionary` object
 
-### dictionary.find(string)
+###lexic.analyze(string)
+
+Method to parse the text. Now it's not working, just splitting text to sentences. Returns the array of strings.
+
+### lexic.findWord(string)
 
 Method to find and collect data about word. It returns special object - word
 
 __Arguments__
 
 * `string` - a word, you want to find and wrap. You should pass into only string with no spaces, dots, commas, and other stuff. You will just get nothing useful, following another way.
+
+## dictionary
+
+It's a special object contains massive JSON dictionary and some methods to work with it.
 
 ### dictionary.parse(string, deep)
 
@@ -110,3 +118,7 @@ __Arguments__
 ### word.otherVariant()
 
 Method will switch active variant of the grammar form.
+
+### word.getBase()
+
+Method will try to find the base form of the word. It's not working good now
